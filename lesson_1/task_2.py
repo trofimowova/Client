@@ -8,3 +8,4 @@ print(type(function),len(function))
 print(type(method),len(method))
 
 
+

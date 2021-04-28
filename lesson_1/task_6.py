@@ -17,3 +17,4 @@ with open('resurs.txt', 'r', encoding=file_coding) as f_n:
         print(i)
 
 
+

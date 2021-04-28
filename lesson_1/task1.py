@@ -13,3 +13,4 @@ b'\u0434\u0435\u043a\u043e\u0440\u0430\u0442\u043e\u0440']
 
 for deus in unic:
     print(type(deus))
+    

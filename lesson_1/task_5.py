@@ -20,3 +20,4 @@ for ping_res in ping_ls:
             print('-'*30)
             break
 
+
