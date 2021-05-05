@@ -1,51 +1,46 @@
-import socket
+from Socket import Socket
 import threading
 
-server = socket.socket(
-    socket.AF_INET,
-    socket.SOCK_STREAM,
-)
+class Server(Socket):
+    def __init__(self):
+        super(Server,self).__init__()
+        #self.listen(5) #---can accept
+        print("Server is listening")
+        self.users =[]
 
-server.bind( # дать адресс неизменный, забиндить.
-    ("127.0.0.1",1234)
-)
-#---------------------------------------------------------------------#
-server.listen(5) #---can accept
+    def set_up(self):
+        self.bind(("127.0.0.1",8000))
+        self.listen(5)
+        self.accept_sockets()
 
-print("Server is listening")
+    def send_data(self,data):
+        for user in self.users:
+            user.send(data) 
 
-users =[]
+    def listen_socket(self,listened_socket=None):
+        print("Listening user...")
 
+        while True:
+            data = listened_socket.recv(2048)
+            print(f"User send{data}")
+            self.send_data(data)
+            
 
+    def accept_sockets(self):
+        while True:
+            user_socket, adress = self.accept()#--------------------accepts tuple(socket,adress)
+            print(f"User {adress[0]} connected")
+            
+            self.users.append(user_socket)
 
-def listen_user(user):
-    print("Listening user...")
-
-    while True:
-        data = user.recv(2048)
-        print(f"User send{data}")
+            listen_accepted_user=threading.Thread(
+                target=self.listen_socket,
+                args=(user_socket,)
+                )
+            listen_accepted_user.start()
         
-        send_to_all(data)
-        
-
-def send_to_all(data):
-    for user in users:
-       user.send(data)           
-       
-
-def start_server():
-    while True:
-        user_socket, adress = server.accept()#--------------------accepts tuple(socket,adress)
-        print(f"User {adress[0]} connected")
-        
-        users.append(user_socket)
-
-        listen_accepted_user=threading.Thread(
-            target=listen_user,
-            args=(user_socket,)
-            )
-        listen_accepted_user.start()
 
     
 if __name__ == "__main__":
-    start_server()
+    server = Server()
+    server.set_up()
