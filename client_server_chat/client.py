@@ -11,3 +11,4 @@ client.connect(
 while True:
     data = client.recv(2048)
     print(data.decode('utf-8'))
+    client.send(input(':::').encode("utf-8"))
