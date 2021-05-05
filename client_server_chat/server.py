@@ -1,4 +1,5 @@
 import socket
+import threading
 
 server = socket.socket(
     socket.AF_INET,
@@ -10,17 +11,41 @@ server.bind( # дать адресс неизменный, забиндить.
 )
 #---------------------------------------------------------------------#
 server.listen(5) #---can accept
+
 print("Server is listening")
 
-while True:
-    user_socket, adress = server.accept()#--------------------accepts tuple(socket,adress)
+users =[]
 
-    print(f"User {user_socket} connected")
 
-    user_socket.send("You connected".encode("utf-8"))
 
-    data = user_socket.recv(2048)
+def listen_user(user):
+    print("Listening user...")
 
-    print(data.decode("utf-8"))
+    while True:
+        data = user.recv(2048)
+        print(f"User send{data}")
+        
+        send_to_all(data)
+        
+
+def send_to_all(data):
+    for user in users:
+       user.send(data)           
+       
+
+def start_server():
+    while True:
+        user_socket, adress = server.accept()#--------------------accepts tuple(socket,adress)
+        print(f"User {adress[0]} connected")
+        
+        users.append(user_socket)
+
+        listen_accepted_user=threading.Thread(
+            target=listen_user,
+            args=(user_socket,)
+            )
+        listen_accepted_user.start()
 
     
+if __name__ == "__main__":
+    start_server()
