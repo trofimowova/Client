@@ -10,24 +10,37 @@ client = socket.socket(
 client.connect(
     ("127.0.0.1",1234)
 )
-
-
-
-while True:
-    msg ={
-        "action": "authenticate",
-        "time": "<unix timestamp>",
-        "user":{
-                "account_name":  "C0deMaver1ck",
-                "password":      "CorrectHorseBatteryStaple"
+msg ={
+    "action": "authenticate",
+    "time": str(time.time),
+    "user":{
+            "account_name":  "C0deMaver1ck",
+            "password":      "CorrectHorseBatteryStaple"
         }
         }
     
-    client.send(pickle.dumps(msg))
+client.send(pickle.dumps(msg))
 
-    data = client.recv(1024)
-    print(pickle.loads(data))
+data = client.recv(1024)
+print(pickle.loads(data))
     
-    #client.close()
+#client.close()
 
-    
+
+pres = {
+    "action": "presence",
+    "time": "<unix timestamp>",
+    "type": "status",
+    "user": {
+    "account_name":  "C0deMaver1ck",
+    "status":      "Yep, I am here!"
+        }
+}
+client.send(pickle.dumps(pres))
+
+
+
+
+
+
+

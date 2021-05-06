@@ -27,7 +27,17 @@ while True:
     "alert":"Необязательное сообщение/уведомление"
     }
     user_socket.send(pickle.dumps(response))
-    user_socket.close()
+    #user_socket.close()
 
+    res=user_socket.recv(1024)
+    print(pickle.loads(res)['user']['status'])
+   
     
-    print(pickle.loads(data))
+    
+    
+    
+    prob={
+        "action": "probe",
+        "time": "<unix timestamp>",}
+    user_socket.send(pickle.dumps(prob))
+    
