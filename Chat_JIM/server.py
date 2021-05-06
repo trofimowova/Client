@@ -1,6 +1,8 @@
 import socket
 import time
-import pickle 
+import pickle
+from threading import Thread
+import threading
 
 
 server = socket.socket(
@@ -20,8 +22,8 @@ while True:
 
     print(f"User {user_socket} connected")
 
-    data = user_socket.recv(1024)
-    print(pickle.loads(data))
+    data2 = user_socket.recv(1024)
+    print(pickle.loads(data2))
     response = {
     "response": 200,
     "alert":"Необязательное сообщение/уведомление"
@@ -41,3 +43,10 @@ while True:
         "time": "<unix timestamp>",}
     user_socket.send(pickle.dumps(prob))
     
+
+    #___________________________________________
+    
+
+
+
+       
