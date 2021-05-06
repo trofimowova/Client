@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "/home/vova/Desktop/clientServer/venv/bin/python",
     "python.languageServer": "Pylance",
     "python.experiments.optOutFrom": ["All"],
     "editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",

@@ -1,29 +1,33 @@
 from Socket import Socket
-from threading import Thread
+import asyncio
 
 class Client(Socket):
     def __init__(self):
         super(Client,self).__init__()
     def set_up(self):
-        self.connect(("127.0.0.1",8000))
-        listen_thread = Thread(target=self.listen_socket)
-        listen_thread.start()
-
-        send_thread = Thread(target=self.send_data, args=(None,))
-        send_thread.start()    
+        self.socket.connect(("127.0.0.1",8000))
+        self.socket.setblocking(False)
 
 
-    def listen_socket(self,listened_socket=None):
+    async def listen_socket(self,listened_socket=None):
         while True:
-            data = self.recv(2048)
-            print(data.decode('utf-8'))
+            data =  await self.main_loop.sock_recv(self.socket,2048)
+            print(data.decode("utf-8"))
         
-    def send_data(self,data):
+    async def send_data(self,data=None):
         while True:
-            self.send(input("...").encode("utf-8"))
+            data=self.main_loop.run_in_executor(None, input, "...")
+            await self.main_loop.sock_sendall(self.socket, data.encode("utf-8"))
+
+    async def main(self):
+       await asyncio.gather(
+            self.main_loop.create_task(self.listen_socket()),
+            self.main_loop.create_task(self.send_data())
+           )
+
 
 
 if __name__ == "__main__":
     client = Client()
     client.set_up()
-
+    client.start_loop()
