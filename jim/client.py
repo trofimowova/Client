@@ -14,6 +14,7 @@ def start_up():
     print(data.decode('utf-8'))
     send_data()
 
+
 def send_data():
     while True:
         msg = {
