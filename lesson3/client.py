@@ -4,7 +4,7 @@ from jim import *
 from options import *
 
 
-def create_presence_msg(user_name, status): # its OK
+def create_presence_msg(user_name, status):
     ts = time.time()
     presence_msg = {
         "action": "presence",
@@ -19,14 +19,14 @@ def create_presence_msg(user_name, status): # its OK
 
 
 def send(args, options_file):
-    conf = get_options(args, options_file) ##### GET OPTIONS
+    conf = get_options(args, options_file)
     host = conf['DEFAULT']['HOST']
-    port = int(conf['DEFAULT']['PORT']) # CONF !!!
+    port = int(conf['DEFAULT']['PORT'])
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((host, port))
     except socket.error as err:
-        print(f"Connection resused error: {err}")
+        print(f"Connection error: {err}")
         sys.exit(2)
     msg = pack(create_presence_msg("Some user", "initial message"))
     sock.send(msg)

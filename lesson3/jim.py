@@ -1,16 +1,16 @@
-import pickle #-----------understood
+import json
 
 
 def pack(response_dict):
     """produces message to send via tcp"""
-    str_msg = pickle.dumps(response_dict)
-    return str_msg #.encode("utf-8")
+    str_msg = json.dumps(response_dict)
+    return str_msg.encode("utf-8")
 
 
 def unpack(byte_str):
     """unpacks received message"""
-    str_decoded = pickle.loads(byte_str)#decode('utf-8')
-    return str_decoded #return pickle.loads(str_decoded)
+    str_decoded = byte_str.decode('utf-8')
+    return json.loads(str_decoded)
 
 
 def status_200():
