@@ -39,8 +39,8 @@ msg = {
     "time": time.ctime(time.time()),
     "type": "status",
     "user": {
-        "account_name": "di-mario",
-        "status": "Свободу Навальному!"
+        "account_name": "trofimowova",
+        "status": "Сообщение серверу!"
     }
 }
 """Отправка presence-сообщение server"""

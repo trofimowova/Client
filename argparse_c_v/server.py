@@ -1,4 +1,5 @@
 import argparse
+import pickle
 from socket import socket, AF_INET, SOCK_STREAM
 from common.utils import get_settings, get_data_from_message,send_message
 
@@ -6,7 +7,7 @@ from common.utils import get_settings, get_data_from_message,send_message
 s = socket(AF_INET, SOCK_STREAM)
 
 """Привязка сокета к IP-адресу и порту"""
-s.bind(('', get_settings()['port']))
+s.bind(('',get_settings()['port']))
 
 """Прием соединения"""
 s.listen(4)
