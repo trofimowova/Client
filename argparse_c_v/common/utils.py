@@ -1,17 +1,31 @@
 import json
+import os
+import sys
 import pickle
 
-"""перевода сообщения из байтов"""
-def get_data_from_message(response):
-    return  pickle.loads(response)#json.loads(response.decode('utf-8'))
+# From bytes to DICT
+def get_message(opened_socket, CONFIGS):
+    response = opened_socket.recv(CONFIGS.get('MAX_PACKAGE_LENGTH'))
+    if isinstance(response, bytes):
+        #json_response = response.decode(CONFIGS.get('ENCODING'))
+        response_dict = pickle.loads(response)
+        if isinstance(response_dict, dict):
+            return response_dict
+        raise ValueError
+    raise ValueError
 
 
-"""перевода сообщения в байтов"""
-def send_message(socket, data_dict):
-    socket.send(pickle.dumps(data_dict))#json.dumps(data_dict).encode('utf-8'))
+"""Translate to bytes"""
+def send_message(opened_socket, message, CONFIGS):
+    json_message = pickle.dumps(message)
+    #response = json_message.encode(CONFIGS.get('ENCODING'))
+    opened_socket.send(json_message)
 
-"""получение словаря из json файла с настройками"""
-def get_settings():
-    with open('common/settings.json') as f_n:
-        objs = json.load(f_n) #json.load(f_n)
-        return objs
+"""Get DICT_format from json_file"""
+def get_configs():
+    if not os.path.exists('common/configs.json'):
+        print('Configuration file is not found')
+        sys.exit(1)
+    with open('common/configs.json') as configs_file:
+        CONFIGS = json.load(configs_file)
+        return CONFIGS
