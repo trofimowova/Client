@@ -5,5 +5,14 @@
     "editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
     "editor.fontSize": 16,
     "terminal.integrated.fontSize": 16,
-    "python.analysis.extraPaths": ["/home/vova/Desktop/clientServer/client_server_chat","/home/vova/Desktop/clientServer/argparse_c_v"]
+    "python.analysis.extraPaths": [
+        "/home/vova/Desktop/clientServer/client_server_chat",
+        "/home/vova/Desktop/clientServer/argparse_c_v"
+    ],
+    "python.testing.pytestArgs": [
+        "argparse_c_v"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
