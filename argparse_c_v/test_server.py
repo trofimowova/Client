@@ -37,5 +37,4 @@ def test_check_message_wrong_user():
     assert check_message(test_message) == test_error_message
 
 
-if __name__ == "__main__":
-    pytest.main()
+

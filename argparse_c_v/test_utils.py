@@ -68,6 +68,3 @@ def test_get_message():
     test_socket = Test_Socket(test_message)
     assert get_message(test_socket, CONFIGS) == {"response": "200", "alert": "test"}
 
-
-if __name__ == "__main__":
-    pytest.main()
