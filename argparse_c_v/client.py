@@ -3,6 +3,7 @@ import sys
 import time
 import argparse
 from socket import socket, AF_INET, SOCK_STREAM
+from log.client_log import client_logger
 from common.utils import get_configs, get_message, send_message
 
 CONFIGS = get_configs()
@@ -26,7 +27,9 @@ def create_presence_message(CONFIGS):
 def check_response(message):
     if CONFIGS.get("RESPONSE") in message:
         if message[CONFIGS.get("RESPONSE")] == 200:
+            client_logger.debug('ответ от сервера получен')
             return f'200: OK, {message[CONFIGS.get("ALERT")]}'
+        client_logger.error('произошла ошибка ответа сервера')
         return f'400: {message[CONFIGS.get("ERROR")]}'
     raise ValueError
 
@@ -57,8 +60,10 @@ def main():
     except IndexError:
         server_address = CONFIGS.get("DEFAULT_IP_ADDRESS")
         server_port = CONFIGS.get("DEFAULT_PORT")
+        client_logger.warning('Подставлены значения адреса и порта по умолчанию')
     except ValueError:
-        print("Port must be from  1024 to 65535")
+        #print("Port must be from  1024 to 65535")
+        client_logger.critical("Port must be from  1024 to 65535")
         sys.exit(1)
 
     s = socket(AF_INET, SOCK_STREAM)
@@ -75,7 +80,8 @@ def main():
         checked_response = check_response(response)
         print(f"Server`s answer: {checked_response}")
     except (ValueError, json.JSONDecodeError):
-        print("DEcoding message error")
+        #print("DEcoding message error")
+        client_logger.error('Decoding message error')
 
     # Connection closing
     s.close()
