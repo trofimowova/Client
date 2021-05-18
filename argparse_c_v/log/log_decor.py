@@ -65,7 +65,7 @@ class Log:
 
 
 
-#DEBUG = TRUE
+DEBUG = TRUE
 
 def mock(func):
     @wraps(func)
