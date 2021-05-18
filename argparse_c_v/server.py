@@ -4,21 +4,24 @@ import sys
 from socket import socket, AF_INET, SOCK_STREAM
 from common.utils import get_configs, get_message, send_message
 from log.server_log import server_logger
+from log.log_decor import Log
 
 CONFIGS = get_configs()
 
 
 # функция проверки сообщения клиента
+@Log("DEBUG")
 def check_message(message):
     if (
         CONFIGS.get("ACTION") in message
         and message[CONFIGS.get("ACTION")] == CONFIGS.get("PRESENCE")
         and CONFIGS.get("TIME") in message
         and CONFIGS.get("USER") in message
-        and message[CONFIGS.get("USER")][CONFIGS.get("ACCOUNT_NAME")] == "Trofimowova"):
-        server_logger.info('Cообщение клиента успешно проверено. Привет, клиент!')
+        and message[CONFIGS.get("USER")][CONFIGS.get("ACCOUNT_NAME")] == "Trofimowova"
+    ):
+        server_logger.info("Cообщение клиента успешно проверено. Привет, клиент!")
         return {CONFIGS.get("RESPONSE"): 200, CONFIGS.get("ALERT"): "Привет, клиент!"}
-    server_logger.error('Cообщение от клиента некорректно!')    
+    server_logger.error("Cообщение от клиента некорректно!")
     return {CONFIGS.get("RESPONSE"): 400, CONFIGS.get("ERROR"): "Bad request"}
 
 
@@ -41,7 +44,7 @@ def main():
         else:
             listen_address = ""
     except IndexError:
-        server_logger.critical('После \'-a\' - необходимо указать адрес')
+        server_logger.critical("После '-a' - необходимо указать адрес")
         sys.exit(1)
 
     try:
@@ -53,11 +56,11 @@ def main():
         if not 65535 >= listen_port >= 1024:
             raise ValueError
     except IndexError:
-        server_logger.critical('После -\'p\' необходимо указать порт')
+        server_logger.critical("После -'p' необходимо указать порт")
         sys.exit(1)
     except ValueError:
-        #print("Порт должен быть указан в пределах от 1024 до 65535")
-        server_logger.critical('Порт должен быть указан в пределах от 1024 до 65535')
+        # print("Порт должен быть указан в пределах от 1024 до 65535")
+        server_logger.critical("Порт должен быть указан в пределах от 1024 до 65535")
         sys.exit(1)
 
     s = socket(AF_INET, SOCK_STREAM)
@@ -73,13 +76,13 @@ def main():
         try:
             message = get_message(client, CONFIGS)
             print(f"Сообщение: {message}, было отправлено клиентом: {addr}")
-            server_logger.debug(f'Получено сообщение {message} от клиента {addr}')
+            server_logger.debug(f"Получено сообщение {message} от клиента {addr}")
             response = check_message(message)
             send_message(client, response, CONFIGS)
             client.close()
         except (ValueError, json.JSONDecodeError):
-            #print("Ошибка! Некорректное сообщение от клиента")
-            server_logger.error('Ошибка! Принято некорректное сообщение от клиента')
+            # print("Ошибка! Некорректное сообщение от клиента")
+            server_logger.error("Ошибка! Принято некорректное сообщение от клиента")
             client.close()
 
 
