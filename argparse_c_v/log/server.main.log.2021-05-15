@@ -1,0 +1,5 @@
+2021-05-15 13:06:48,726 - DEBUG - server - Получено сообщение {'action': 'presence', 'time': 'Sat May 15 13:06:48 2021', 'type': 'status', 'user': {'account_name': 'Trofimowova', 'status': 'Привет, сервер!'}} от клиента ('127.0.0.1', 37186) 
+2021-05-15 13:06:48,726 - INFO - server - Cообщение клиента успешно проверено. Привет, клиент! 
+2021-05-15 13:08:29,388 - INFO - server_log - Testing log start 
+2021-05-15 13:08:29,388 - WARNING - server_log - Testing log start 
+2021-05-15 13:08:29,388 - CRITICAL - server_log - Testing log start 
