@@ -5,12 +5,13 @@ import argparse
 from socket import socket, AF_INET, SOCK_STREAM
 from log.client_log import client_logger
 from common.utils import get_configs, get_message, send_message
-from log.log_decor import Log
+from log.log_decor import Log,mock
 
 CONFIGS = get_configs()
 
 
 #  presence-msg
+@mock
 @Log("DEBUG")
 def create_presence_message(CONFIGS):
     message = {
@@ -24,9 +25,14 @@ def create_presence_message(CONFIGS):
     }
     return message
 
+def create_presence_message_mock(CONFIGS):
+    mock_res=print("status","Привет, сервер!")
+    return mock_res
+
 
 # функция проверки ответа сервера
 @Log("DEBUG")
+@mock
 def check_response(message):
     if CONFIGS.get("RESPONSE") in message:
         if message[CONFIGS.get("RESPONSE")] == 200:
@@ -35,6 +41,12 @@ def check_response(message):
         client_logger.error("произошла ошибка ответа сервера")
         return f'400: {message[CONFIGS.get("ERROR")]}'
     raise ValueError
+
+def check_response_mock():
+    mock_res=print("Ожидаем ответ сервера")
+    return mock_res
+
+    
 
 
 def main():
@@ -88,6 +100,9 @@ def main():
 
     # Connection closing
     s.close()
+
+
+
 
 
 if __name__ == "__main__":

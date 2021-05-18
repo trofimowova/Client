@@ -4,12 +4,13 @@ import sys
 from socket import socket, AF_INET, SOCK_STREAM
 from common.utils import get_configs, get_message, send_message
 from log.server_log import server_logger
-from log.log_decor import Log
+from log.log_decor import Log,mock
 
 CONFIGS = get_configs()
 
 
 # функция проверки сообщения клиента
+@mock
 @Log("DEBUG")
 def check_message(message):
     if (
@@ -23,6 +24,10 @@ def check_message(message):
         return {CONFIGS.get("RESPONSE"): 200, CONFIGS.get("ALERT"): "Привет, клиент!"}
     server_logger.error("Cообщение от клиента некорректно!")
     return {CONFIGS.get("RESPONSE"): 400, CONFIGS.get("ERROR"): "Bad request"}
+
+def check_message_mock():
+    mock_res = print('"Привет, клиент! or Bad request')
+    return mock_res    
 
 
 # параметры командной строки скрипта server.py -p <port>, -a <addr>:
@@ -84,6 +89,9 @@ def main():
             # print("Ошибка! Некорректное сообщение от клиента")
             server_logger.error("Ошибка! Принято некорректное сообщение от клиента")
             client.close()
+
+
+
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import inspect
+from pickle import TRUE
 import sys
 import traceback
 from functools import wraps
@@ -37,7 +38,7 @@ def log():
             get_decorator_logger().info(
                 f"Функция {func.__name__} вызвана из функции {traceback.format_stack()[0].strip().split()[-1]}."
             )
-            res = func(*args, **kwargs)
+            res = func(*args, **kwargs)# Before func logger
             return res
 
         return decorated
@@ -50,7 +51,7 @@ class Log:
         self.logging_level = logging_level
 
     def __call__(self, func):
-        @wraps(func)
+        @wraps(func) #Декорированная функция
         def decorated(*args, **kwargs):
             print(check_logging_level(self.logging_level))
             get_decorator_logger().info(
@@ -61,3 +62,16 @@ class Log:
             return res
 
         return decorated
+
+
+
+#DEBUG = TRUE
+
+def mock(func):
+    @wraps(func)
+    def wrapper(self,*args,**kwargs):
+        func_name = func.__name__+'_mock' if DEBUG else func.__name__
+        result = getattr(self,func_name)(*args,**kwargs)
+        return result
+    wrapper.__name__=func
+    return wrapper
