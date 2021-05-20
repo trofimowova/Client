@@ -30,4 +30,3 @@ def test_correct_response():
 def test_no_response():
     with pytest.raises(ValueError):
         check_response({CONFIGS.get("ERROR"): "Bad request"})
-

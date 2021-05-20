@@ -3,12 +3,15 @@ import sys
 import time
 import argparse
 from socket import socket, AF_INET, SOCK_STREAM
+from log.client_log import client_logger
 from common.utils import get_configs, get_message, send_message
+from log.log_decor import Log
 
 CONFIGS = get_configs()
 
 
 #  presence-msg
+@Log("DEBUG")
 def create_presence_message(CONFIGS):
     message = {
         CONFIGS.get("ACTION"): CONFIGS.get("PRESENCE"),
@@ -22,63 +25,70 @@ def create_presence_message(CONFIGS):
     return message
 
 
+
 # функция проверки ответа сервера
+@Log("DEBUG")
 def check_response(message):
     if CONFIGS.get("RESPONSE") in message:
         if message[CONFIGS.get("RESPONSE")] == 200:
+            client_logger.debug("ответ от сервера получен")
             return f'200: OK, {message[CONFIGS.get("ALERT")]}'
+        client_logger.error("произошла ошибка ответа сервера")
         return f'400: {message[CONFIGS.get("ERROR")]}'
     raise ValueError
 
 
+
+
 def main():
+    responses = []
     # global CONFIGS
-    # cmd parametrs/////// client.py <addr> [<port>]:
-    parser = argparse.ArgumentParser(description="command line client parameters")
-    parser.add_argument(
-        "addr",
-        type=str,
-        nargs="?",
-        default=CONFIGS.get("DEFAULT_IP_ADDRESS"),
-        help="server ip address",
-    )
-    parser.add_argument(
-        "port", type=int, nargs="?", default=CONFIGS.get("DEFAULT_PORT"), help="port"
-    )
+    # параметры командной строки скрипта client.py <addr> [<port>]:
+    parser = argparse.ArgumentParser(description='command line client parameters')
+    parser.add_argument('addr', type=str, nargs='?', default=CONFIGS.get('DEFAULT_IP_ADDRESS'),
+                        help='server ip address')
+    parser.add_argument('port', type=int, nargs='?', default=CONFIGS.get('DEFAULT_PORT'), help='port')
     args = parser.parse_args()
     print(args)
 
-    # Checking enterded param from cmd by client
+    # проверка введённых параметров из командной строки вызова клиента
     try:
         server_address = args.addr
         server_port = int(args.port)
         if not 65535 >= server_port >= 1024:
             raise ValueError
     except IndexError:
-        server_address = CONFIGS.get("DEFAULT_IP_ADDRESS")
-        server_port = CONFIGS.get("DEFAULT_PORT")
+        server_address = CONFIGS.get('DEFAULT_IP_ADDRESS')
+        server_port = CONFIGS.get('DEFAULT_PORT')
+        client_logger.warning('Подставлены значения адреса и порта по умолчанию')
     except ValueError:
-        print("Port must be from  1024 to 65535")
+        # print('Порт должен быть указан в пределах от 1024 до 65535')
+        client_logger.critical('Порт должен быть указан в пределах от 1024 до 65535')
         sys.exit(1)
 
-    s = socket(AF_INET, SOCK_STREAM)
+    # При использовании оператора with сокет будет автоматически закрыт
+    with socket(AF_INET, SOCK_STREAM) as sock:  # Создать сокет TCP
+        # устанавливает соединение
+        sock.connect((server_address, server_port))
+        if 'send' in sys.argv:
+            print('клиент в режиме отправки сообщения')
+            while True:
+                message_to_send = input("Введите сообщение (для выхода - 'q'): ")
+                if message_to_send == 'q':
+                    break
+                sock.send(message_to_send.encode(CONFIGS.get('ENCODING')))
+                data = sock.recv(CONFIGS.get('MAX_PACKAGE_LENGTH')).decode(CONFIGS.get('ENCODING'))
+                print('Ответ: ', data)
+        else:
+            print('клиент в режиме слушателя')
+            while True:
+                data = sock.recv(CONFIGS.get('MAX_PACKAGE_LENGTH')).decode(CONFIGS.get('ENCODING'))
+                if data:
+                    responses.append(data)
+                    print('Ответ: ', data)
 
-    s.connect((server_address, server_port))
 
-    # Forms and sends msg to server;
-    presence_message = create_presence_message(CONFIGS)
-    send_message(s, presence_message, CONFIGS)
 
-    # Get feedback from server and checks server`s message'
-    try:
-        response = get_message(s, CONFIGS)
-        checked_response = check_response(response)
-        print(f"Server`s answer: {checked_response}")
-    except (ValueError, json.JSONDecodeError):
-        print("DEcoding message error")
-
-    # Connection closing
-    s.close()
 
 
 if __name__ == "__main__":

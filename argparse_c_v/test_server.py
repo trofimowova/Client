@@ -35,6 +35,3 @@ def test_check_message_wrong_user():
         "user": {"account_name": "Nolan Grayson", "status": "Think , Mark! Think!"},
     }
     assert check_message(test_message) == test_error_message
-
-
-
